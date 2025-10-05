@@ -25,17 +25,6 @@ def on_file_type_change(self, context):
     print(f"🔹 Selected API item: {self.burnin_export_file_type}")
 
 def register_properties():
-    bpy.types.Scene.burnin_usd_primpath = bpy.props.StringProperty(
-        name="USD Prim Path",
-        default="/asset/character/ch_hero"
-    )
-
-    bpy.types.Scene.burnin_usd_root = bpy.props.StringProperty(
-        name="Root Prim",
-        default="/World"
-    )
-
-
     # burnin environ
     burnin_root_name = os.getenv("BURNIN_ROOT_NAME")
     burnin_root_id = os.getenv("BURNIN_ROOT_ID")
