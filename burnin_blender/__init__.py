@@ -1,21 +1,31 @@
 import bpy
-from .ui import panel
-from .operators import usd_exporter
-from . import properties
+# from .ui import panel
+from .exporter import exporter_panel
+from .exporter.exporter_operator import BURNIN_EXPORTER
+from .exporter import exporter_properties
+
+from .scene_builder import scene_builder_panel
+from .scene_builder.scene_builder_operator import BURNIN_SCENE_BUILDER
 
 # Collect all classes to register
 classes = (
-    panel.BurninPanel,
-    usd_exporter.BURNIN_OT_export_usd,
+    exporter_panel.BurninPanel,
+    BURNIN_EXPORTER,
+
+    scene_builder_panel.BurninScenePanel,
+    BURNIN_SCENE_BUILDER
 )
+
+
 
 def enable(addon_name="burnin-blender"):
     """Registers all Blender classes"""
     for cls in classes:
         bpy.utils.register_class(cls)
     
-    properties.register_properties()
+    exporter_properties.register_properties()
     print(f"✅ {addon_name} enabled")
+
 
 def disable(addon_name="burnin-blender"):
     """Unregisters all Blender classes"""
@@ -23,5 +33,5 @@ def disable(addon_name="burnin-blender"):
         bpy.utils.unregister_class(cls)
     
     # Unregister scene properties
-    properties.unregister_properties()
+    exporter_properties.unregister_properties()
     print(f"✅ {addon_name} disabled")
