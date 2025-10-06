@@ -113,6 +113,7 @@ class BURNIN_EXPORTER(bpy.types.Operator):
                 # update node type data: FileType
                 file_type: FileType = version_type.file_type.data
                 file_type.file_name = file_name.split(".")[-2]
+                file_type.file_format = "." + str(file_path_with_file_name).split(".")[-1]
                 # TODO: FINISH FILE TYPE
 
                 version_type.file_type = TypeWrapper(file_type)
