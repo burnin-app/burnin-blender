@@ -41,6 +41,7 @@ class BURNIN_SCENE_BUILDER(bpy.types.Operator):
         for name in ["character", "prop", "env"]:
             if name not in asset_collection.objects:
                 empty = create_empty(name)
+                empty.hide_select = True
                 asset_collection.objects.link(empty)
 
         return {"FINISHED"}

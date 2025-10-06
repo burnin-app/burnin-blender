@@ -13,17 +13,6 @@ class BURNIN_EXPORTER(bpy.types.Operator):
     bl_label = "Export Selected as USD"
     bl_description = "Export selected objects to USD using a custom root prim"
 
-    # prim_path: bpy.props.StringProperty(
-    #     name="USD Prim Path",
-    #     description="Prim path for USD filename, e.g. /asset/character/ch_hero",
-    #     default="/untitled"
-    # )
-
-    # root_name: bpy.props.StringProperty(
-    #     name="Root Prim Name",
-    #     description="Name of root empty for USD export",
-    #     default="World"
-    # )
 
     def execute(self, context):
 
@@ -56,7 +45,7 @@ class BURNIN_EXPORTER(bpy.types.Operator):
 
                 file_path = buildFilePath(context=context, include_file_name=False)
                 scene.burnin_export_status = VersionStatus.Incomplete.value
-                file_name = component_path.split("/")[-2] + "_" + component_path.split("/")[-1] + scene.burnin_export_file_type
+                file_name = component_path.split("/")[-1] + "_" + version_number + scene.burnin_export_file_type
                 file_path_with_file_name  = file_path / file_name
                 print(file_name, "FILE_NAME")
                 print(file_path)
@@ -123,8 +112,8 @@ class BURNIN_EXPORTER(bpy.types.Operator):
                 # Execute commit
                 version_node: Node = burnin_client.commit_component_version(version_node)
                 print(version_node)
-
-
+                node_type: Version = version_node.node_type.data
+                scene.burnin_export_status = node_type.status
 
 
         except Exception as e:
@@ -133,34 +122,6 @@ class BURNIN_EXPORTER(bpy.types.Operator):
         finally:
             pass
 
-        # # Create an empty root object
-        # root_empty = bpy.data.objects.new(self.root_name, None)
-        # context.collection.objects.link(root_empty)
-
-        # # Parent selected objects to the root
-        # for obj in selected_objects:
-        #     obj.parent = root_empty
-
-        # # Hard-coded export folder
-        # export_folder = r"X:\tmp"
-        # os.makedirs(export_folder, exist_ok=True)
-
-        # # Create filename from prim path
-        # filename = self.prim_path.lstrip("/").replace("/", "_") + ".usd"
-        # filepath = os.path.join(export_folder, filename)
-
-        # try:
-        #     bpy.ops.wm.usd_export(
-        #         filepath=filepath,
-        #         selected_objects_only=True,
-        #     )
-        #     self.report({'INFO'}, f"USD exported: {filepath} with root {self.root_name}")
-        #     print(f"✅ USD exported to: {filepath} with root {self.root_name}")
-        # finally:
-        #     # Unparent objects and remove the temporary root
-        #     for obj in selected_objects:
-        #         obj.parent = None
-        #     bpy.data.objects.remove(root_empty)
 
         return {'FINISHED'}
 

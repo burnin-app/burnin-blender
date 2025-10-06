@@ -28,3 +28,13 @@ def buildFilePath(context, include_file_name: bool = False, component_path: str 
         return file_path / file_name
     else:
         return file_path
+
+
+
+
+def buildEnumOptions(items: list[str]) -> list[(str, str, str)]:
+    output = []
+    for item in items:
+        k = (str(item), str(item), "")
+        output.append(k)
+    return output

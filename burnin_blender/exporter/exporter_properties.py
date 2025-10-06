@@ -1,22 +1,6 @@
 import bpy
 import os
-from burnin.api import BurninClient
-
-_root_names = []
-
-def get_root_names(self, context):
-    global _root_names
-    _root_names = []
-
-    client = BurninClient()
-    roots = client.get_local_root_names()
-    i = 1
-    for  root in roots:
-        k = (str(i) + "." + root, root, "")
-        i = 1 + 1
-        _root_names.append(k)
-    
-    return _root_names
+from ..api import get_root_names
 
 def on_combobox_change(self, context):
     print(f"🔹 Selected API item: {self.burnin_root_name}")
