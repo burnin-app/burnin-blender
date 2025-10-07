@@ -149,18 +149,21 @@ class BURNIN_IMPORTER(bpy.types.Operator):
 
             for top in top_parents:
                 parent_name = top.name.split(".")[0]
-                prop_root = bpy.data.objects.get(parent_name)
-                if prop_root:
-                    print(f"🔹 Parenting '{top.name}' under existing prop '{prop_root.name}'")
+                if parent_name in ["character", "prop", "env"]:
+                    prop_root = bpy.data.objects.get(parent_name)
+                    if prop_root:
+                        print(f"🔹 Parenting '{top.name}' under existing prop '{prop_root.name}'")
 
-                    # Re-parent all children of the imported top to the prop_root
-                    for obj in top.children:
-                        obj.parent = prop_root
+                        # Re-parent all children of the imported top to the prop_root
+                        for obj in top.children:
+                            obj.parent = prop_root
 
-                    # Delete the top parent itself
-                    bpy.data.objects.remove(top, do_unlink=True)
+                        # Delete the top parent itself
+                        bpy.data.objects.remove(top, do_unlink=True)
+                    else:
+                        print(f"⚠️ No existing prop object found to parent '{top.name}'")
                 else:
-                    print(f"⚠️ No existing prop object found to parent '{top.name}'")
+                    pass
 
 
         except Exception as e:
