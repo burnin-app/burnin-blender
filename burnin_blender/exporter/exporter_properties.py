@@ -60,6 +60,11 @@ def register_properties():
         default=""
     )
 
+    bpy.types.Scene.burnin_export_usd_prim_path = bpy.props.StringProperty(
+        name="Primitive Path",
+        default="/asset"
+    )
+
     bpy.types.Scene.burnin_export_type = bpy.props.EnumProperty(
         name="Export Type",
         description="Choose a export type",

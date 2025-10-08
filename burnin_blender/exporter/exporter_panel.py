@@ -18,6 +18,8 @@ class BurninPanel(bpy.types.Panel):
         layout.prop(scene, "burnin_export_component_path", text="Component Path")
         layout.prop(scene, "burnin_export_file_type", text="File Type")
 
+        layout.prop(scene, "burnin_export_usd_prim_path", text="Primitive Path")
+
         layout.label(text=f"Version: {scene.burnin_export_version_number}")
         layout.label(text=f"Status: {scene.burnin_export_status}")
 

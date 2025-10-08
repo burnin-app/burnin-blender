@@ -20,6 +20,7 @@ class BURNIN_EXPORTER(bpy.types.Operator):
         root_name = scene.burnin_root_name
         root_id = scene.burnin_root_id
         component_path = scene.burnin_export_component_path
+        primitive_path = scene.burnin_export_usd_prim_path
 
 
         selected_objects = context.selected_objects
@@ -66,7 +67,7 @@ class BURNIN_EXPORTER(bpy.types.Operator):
                 # Export logic
                 bpy.ops.wm.usd_export(
                     filepath=str(file_path_with_file_name),
-                    root_prim_path="/asset",  
+                    root_prim_path=primitive_path,  
                     selected_objects_only=True,
                     convert_orientation=True,
                     export_global_forward_selection='NEGATIVE_Z',
