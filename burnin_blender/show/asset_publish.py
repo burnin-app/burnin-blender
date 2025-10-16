@@ -78,7 +78,7 @@ class BU_ASSET_PUBLISH(bpy.types.Operator):
                     export_curves=False,
                     export_points=False,
                     export_hair=False,
-                    export_materials=True,
+                    export_materials=False,
 
                     export_custom_properties=True,
                     custom_properties_namespace="userProperties",
