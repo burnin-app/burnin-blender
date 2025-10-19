@@ -14,7 +14,8 @@ from .importer.importer_panel import BURNIN_IMPORTER, BurninImporterPanel, regis
 
 # BURNIN SHOW
 from .show import show_panel
-from .show import asset_publish, asset_build
+from .show.asset import asset_publish, asset_build
+from .show.shot import shot_build, shot_publish
 
 
 # Collect all classes to register
@@ -31,7 +32,10 @@ classes = (
     show_panel.BurninShowPanel,
     show_panel.BURNIN_SHOW,
     asset_publish.BU_ASSET_PUBLISH,
-    asset_build.BU_ASSET_BUILD
+    asset_build.BU_ASSET_BUILD,
+
+    shot_publish.BU_SHOT_PUBLISH,
+    shot_build.BU_SHOT_BUILD
 )
 
 

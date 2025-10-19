@@ -7,7 +7,7 @@ from burnin.entity.filetype import Geometry
 from burnin.entity.utils import buildDirPathFromVersionNode
 from burnin.api import BurninClient
 
-from ..utils import force_sync_object_and_mesh_names_sanitized
+from ...utils import force_sync_object_and_mesh_names_sanitized
 import bpy
 
 def init_collections(asset_type, asset_name):

@@ -5,9 +5,11 @@ from ..api import fetch_version_list_as_enum_option
 import bpy
 import os
 from burnin.show.asset import BU_asset
+from burnin.show.shot import BU_shot
 
 def on_asset_change(self, context):
     print("Asset changed")
+
 
 def on_version_type_change(self, context):
     print(f"🔹 Selected API item: {self.bu_version_type}")
@@ -43,6 +45,40 @@ def version_type_update(self, context):
     if len(bu_asset_entity_component) > 0:
         return version_items
 
+
+
+## SHOT
+
+def on_seq_init_load(slef, context):
+    scene = context.scene
+    root_id = os.getenv("BURNIN_ROOT_ID")
+    bu_show = scene.bu_show
+    bu_seq = scene.bu_seq
+
+    bu_shot_cls = BU_shot(root_id, bu_show)
+    bu_shot_cls.load_shot_list(bu_seq)
+    if len(bu_shot_cls.shot_names_list) > 0:
+        return  buildEnumOptions(bu_shot_cls.shot_names_list)
+    else:
+        return []
+
+
+def on_seq_change(self, context):
+    scene = context.scene
+    root_id = os.getenv("BURNIN_ROOT_ID")
+    bu_show = scene.bu_show
+    bu_seq = scene.bu_seq
+
+    bu_shot_cls = BU_shot(root_id, bu_show)
+    bu_shot_cls.load_shot_list(bu_seq)
+    if len(bu_shot_cls.shot_names_list) > 0:
+        bu_shot_list = buildEnumOptions(bu_shot_cls.shot_names_list)
+        bpy.types.Scene.bu_shot = bpy.props.EnumProperty(
+            name="BU_shot",
+            description="Shot List",
+            items=bu_shot_list,
+            update=on_asset_change
+        )
 
 
 def register_properties():
@@ -102,6 +138,58 @@ def register_properties():
         )
 
 
+        ## SHOT VARIABLES
+
+        bu_shot = BU_shot(burnin_root_id, bu_show)
+        bu_seq_list = buildEnumOptions(bu_shot.seq_name_list)
+
+        bpy.types.Scene.bu_seq = bpy.props.EnumProperty(
+            name="BU_seq",
+            description="Sequence List",
+            items=bu_seq_list,
+            update=on_seq_change
+        )
+
+        # load shot list
+
+        bpy.types.Scene.bu_shot = bpy.props.EnumProperty(
+            name="BU_shot",
+            description="Shot List",
+            items=on_seq_init_load,
+            # update=on_asset_change
+        )
+
+        bu_shot_entity_type_list = buildEnumOptions(bu_shot.get_shot_entity_types("blender"))
+
+        bpy.types.Scene.bu_shot_entity = bpy.props.EnumProperty(
+            name="BU_shot_entity",
+            description="Shot Entity Type",
+            items=bu_shot_entity_type_list,
+            # update=on_asset_change
+        )
+
+        bu_shot_asset_list = bu_asset_list
+        bu_shot_asset_list.append(("render:Cam", "render:Cam", ""))
+        
+
+        bpy.types.Scene.bu_shot_asset = bpy.props.EnumProperty(
+            name="BU_shot",
+            description="Shot Asset List",
+            items=bu_shot_asset_list,
+            # update=on_asset_change
+        )
+
+        bpy.types.Scene.bu_shot_asset_version_type = bpy.props.EnumProperty(
+            name="Version",
+            description="Select Version Type",
+            items=[("Latest", "Latest", "Latest"), ("Atop", "Atop", "Atop")],
+            # update=on_version_type_change
+        )
+
+        bpy.types.Scene.bu_shot_comment = bpy.props.StringProperty(
+            name="BU_comment",
+            default=""
+        )
 
 def unregister_properties():
     if bpy.types.Scene.bu_show:
@@ -138,6 +226,7 @@ class BurninShowPanel(bpy.types.Panel):
         layout = self.layout
         scene = context.scene
 
+        # asset
         layout.label(text=f"show: {scene.bu_show}")
         layout.prop(scene, "bu_asset", text="Asset")
         layout.prop(scene, "bu_asset_entity", text="Entity")
@@ -147,3 +236,15 @@ class BurninShowPanel(bpy.types.Panel):
         layout.operator("burnin.bu_asset_build", text="Build")
         layout.prop(scene, "bu_comment", text="Comment")
         layout.operator("burnin.bu_asset_publish", text="Publish")
+
+        # shot
+        layout.label(text=f"Shot Workflow")
+        layout.prop(scene, "bu_seq", text="Sequence")
+        layout.prop(scene, "bu_shot", text="Shot")
+        layout.prop(scene, "bu_shot_entity", text="Entity")
+        layout.prop(scene, "bu_shot_asset", text="Asset")
+        layout.prop(scene, "bu_shot_asset_version_type", text="Version")
+
+        layout.operator("burnin.bu_shot_build", text="Build")
+        layout.prop(scene, "bu_shot_comment", text="Comment")
+        layout.operator("burnin.bu_shot_publish", text="Publish")

@@ -1,5 +1,5 @@
 import bpy
-from ..utils import force_sync_object_and_mesh_names_sanitized, selectObjectsInCollection, buildFilePathFromEnv
+from ...utils import force_sync_object_and_mesh_names_sanitized, selectObjectsInCollection, buildFilePathFromEnv
 from burnin.api import BurninClient
 from burnin.entity.node import Node
 from burnin.entity.version import Version, VersionStatus
