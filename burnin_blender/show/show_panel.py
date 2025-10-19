@@ -169,7 +169,7 @@ def register_properties():
         )
 
         bu_shot_asset_list = bu_asset_list
-        bu_shot_asset_list.append(("render:Cam", "render:Cam", ""))
+        bu_shot_asset_list.append(("render:Camera", "render:Camera", ""))
         
 
         bpy.types.Scene.bu_shot_asset = bpy.props.EnumProperty(
@@ -190,6 +190,13 @@ def register_properties():
             name="BU_comment",
             default=""
         )
+
+        bpy.types.Scene.bu_shot_component_path = bpy.props.StringProperty(
+            name="Shot Component Path",
+            default="",
+            # update=on_component_path_change
+        )
+
 
 def unregister_properties():
     if bpy.types.Scene.bu_show:

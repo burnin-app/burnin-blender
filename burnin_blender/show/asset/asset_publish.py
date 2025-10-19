@@ -1,5 +1,5 @@
 import bpy
-from ...utils import force_sync_object_and_mesh_names_sanitized, selectObjectsInCollection, buildFilePathFromEnv
+from ...utils import meshNamesSanitized, selectObjectsInCollection, buildFilePathFromEnv
 from burnin.api import BurninClient
 from burnin.entity.node import Node
 from burnin.entity.version import Version, VersionStatus
@@ -37,7 +37,7 @@ class BU_ASSET_PUBLISH(bpy.types.Operator):
         bpy.ops.object.select_all(action='DESELECT')
         selectObjectsInCollection(asset_col)
 
-        force_sync_object_and_mesh_names_sanitized()
+        meshNamesSanitized()
 
         component_full_path = f"@/show:{show_name}/asset/{asset_type_name}/publishes/{asset_entity}/{component}" 
         scene.bu_component_path

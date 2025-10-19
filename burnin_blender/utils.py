@@ -83,7 +83,7 @@ def makeCollectionActive(collection):
     else:
         print(f"Could not find LayerCollection for '{collection.name}'.")
 
-def force_sync_object_and_mesh_names_sanitized():
+def meshNamesSanitized():
     print("RUNNING FORCE SYNC OBJ NAMES WITH SANITIZATION")
     
     for obj in bpy.context.selected_objects:
