@@ -186,6 +186,12 @@ def register_properties():
             # update=on_version_type_change
         )
 
+        bpy.types.Scene.bu_shot_export_animation = bpy.props.BoolProperty(
+            name="Export Animation",
+            description="Turn this option on or off",
+            default=False  
+        )
+
         bpy.types.Scene.bu_shot_comment = bpy.props.StringProperty(
             name="BU_comment",
             default=""
@@ -253,5 +259,7 @@ class BurninShowPanel(bpy.types.Panel):
         layout.prop(scene, "bu_shot_asset_version_type", text="Version")
 
         layout.operator("burnin.bu_shot_build", text="Build")
+
+        layout.prop(scene, "bu_shot_export_animation", text="Export animation")
         layout.prop(scene, "bu_shot_comment", text="Comment")
         layout.operator("burnin.bu_shot_publish", text="Publish")

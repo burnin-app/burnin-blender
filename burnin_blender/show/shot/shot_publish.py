@@ -91,6 +91,7 @@ class BU_SHOT_PUBLISH(bpy.types.Operator):
                     export_hair=False,
                     export_materials=False,
 
+                    export_animation=scene.bu_shot_export_animation,
                     export_custom_properties=True,
                     custom_properties_namespace="userProperties",
                     evaluation_mode='RENDER'
