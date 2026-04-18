@@ -19,9 +19,16 @@ def on_component_path_change(self, context):
     root_id = os.getenv("BURNIN_ROOT_ID")
     bu_show = scene.bu_show
     bu_asset = scene.bu_asset
+
     bu_asset_entity = scene.bu_asset_entity
+    if scene.bu_asset_entity == "assembly":
+        bu_asset_entity = "assembly"
+    else:
+        bu_asset_entity = "publishes/" + {scene.bu_asset_entity}
+
     bu_asset_entity_component = scene.bu_asset_entity_component
-    component_path = f"@/show:{bu_show}/asset/{bu_asset}/publishes/{bu_asset_entity}/{bu_asset_entity_component}"
+    component_path = f"@/show:{bu_show}/asset/{bu_asset}/{bu_asset_entity}/{bu_asset_entity_component}"
+
     version_items = fetch_version_list_as_enum_option(root_id, component_path)
 
     if len(bu_asset_entity_component) > 0:
@@ -37,9 +44,16 @@ def version_type_update(self, context):
     root_id = os.getenv("BURNIN_ROOT_ID")
     bu_show = scene.bu_show
     bu_asset = scene.bu_asset
+
     bu_asset_entity = scene.bu_asset_entity
+    if scene.bu_asset_entity == "assembly":
+        bu_asset_entity = "assembly"
+    else:
+        bu_asset_entity = "publishes/" + {scene.bu_asset_entity}
+
     bu_asset_entity_component = scene.bu_asset_entity_component
-    component_path = f"@/show:{bu_show}/asset/{bu_asset}/publishes/{bu_asset_entity}/{bu_asset_entity_component}"
+    component_path = f"@/show:{bu_show}/asset/{bu_asset}/{bu_asset_entity}/{bu_asset_entity_component}"
+
     version_items = fetch_version_list_as_enum_option(root_id, component_path)
 
     if len(bu_asset_entity_component) > 0:

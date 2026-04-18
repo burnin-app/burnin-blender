@@ -1,14 +1,17 @@
+import os
 from shutil import ExecError
 from sys import version
+
 import bpy
-import os
-from ..api import get_root_names, fetch_version_list_as_enum_option
-from burnin.entity.surreal import Thing
-from burnin.entity.node import Node
-from burnin.entity.version import Version
-from burnin.entity.filetype import Geometry
-from burnin.entity.utils import buildDirPathFromVersionNode
 from burnin.api import BurninClient
+from burnin.entity.filetype import Geometry
+from burnin.entity.node import Node
+from burnin.entity.surreal import Thing
+from burnin.entity.utils import buildDirPathFromVersionNode
+from burnin.entity.version import Version
+from burnin.path import build_path_from_node
+
+from ..api import fetch_version_list_as_enum_option, get_root_names
 
 
 def on_root_name_change(self, context):
@@ -17,6 +20,7 @@ def on_root_name_change(self, context):
 
 def on_version_type_change(self, context):
     print(f"🔹 Selected API item: {self.burnin_import_version_type}")
+
 
 def on_component_path_change(self, context):
     scene = context.scene
@@ -27,15 +31,17 @@ def on_component_path_change(self, context):
     bpy.types.Scene.burnin_import_version_type = bpy.props.EnumProperty(
         name="Version Type",
         description="Select Version Type",
-        items= version_items,
-        update=on_version_type_change 
+        items=version_items,
+        update=on_version_type_change,
     )
+
 
 def fetch_version_list_enum(self, context):
     scene = context.scene
     root_id = scene.burnin_import_root_id
     component_path = scene.burnin_import_component_path
     return fetch_version_list_as_enum_option(root_id, component_path)
+
 
 def register_import_properties():
     _burnin_root_name = os.getenv("BURNIN_ROOT_NAME")
@@ -44,13 +50,11 @@ def register_import_properties():
 
     # burnin roots
     bpy.types.Scene.burnin_import_root_id = bpy.props.StringProperty(
-        name="Burnin Import RootID",
-        default=burnin_root_id
+        name="Burnin Import RootID", default=burnin_root_id
     )
 
     bpy.types.Scene.burnin_import_root_path = bpy.props.StringProperty(
-        name="Burnin Import Root Path",
-        default=burnin_root_path
+        name="Burnin Import Root Path", default=burnin_root_path
     )
 
     bpy.types.Scene.burnin_import_root_name = bpy.props.EnumProperty(
@@ -62,24 +66,22 @@ def register_import_properties():
 
     # Import user data
     bpy.types.Scene.burnin_import_component_path = bpy.props.StringProperty(
-        name="Burnin Import Component Path",
-        default="",
-        update=on_component_path_change
+        name="Burnin Import Component Path", default="", update=on_component_path_change
     )
 
     bpy.types.Scene.burnin_import_version_type = bpy.props.EnumProperty(
         name="Version Type",
         description="Select Version Type",
         items=[],
-        update=on_version_type_change
+        update=on_version_type_change,
     )
+
 
 def unregister_import_properties():
     del bpy.types.Scene.burnin_import_root_id
     del bpy.types.Scene.burnin_import_root_path
     del bpy.types.Scene.burnin_import_root_name
     del bpy.types.Scene.burnin_import_component_path
-
 
 
 class BURNIN_IMPORTER(bpy.types.Operator):
@@ -101,22 +103,19 @@ class BURNIN_IMPORTER(bpy.types.Operator):
         try:
             burnin_client = BurninClient()
 
-            version_node: Node = burnin_client.get_version_node(component_id) 
+            version_node: Node = burnin_client.get_version_node(component_id)
             if not version_node.node_type.variant_name == "Version":
                 message = f"Invalid node type: {version_node.node_type.variant_name}"
                 self.report({"ERROR"}, message)
                 raise Exception(message)
 
+            node_file_path = build_path_from_node(version_node)
 
-            node_file_path = buildDirPathFromVersionNode(version_node, root_path, root_name)
-        
-            
             node_type: Version = version_node.node_type.data
             if not node_type.file_type.variant_name == "Geometry":
                 message = f"Invalid file type: {node_type.file_type.variant_name}"
                 self.report({"ERROR"}, message)
                 raise Exception(message)
-            
 
             file_type: Geometry = node_type.file_type.data
             file_name = file_type.file_name
@@ -126,13 +125,11 @@ class BURNIN_IMPORTER(bpy.types.Operator):
                 message = f"Invalid file format: Does not support the file format: {file_format}."
                 self.report({"ERROR"}, message)
                 raise Exception(message)
-            
+
             file_name_with_format = file_name + file_format
             file_path = node_file_path / file_name_with_format
             print(file_path)
             bpy.ops.wm.usd_import(filepath=str(file_path))
-
-
 
             ## blender operations to put the asset in the right place
             imported_objects = bpy.context.selected_objects
@@ -142,7 +139,7 @@ class BURNIN_IMPORTER(bpy.types.Operator):
                 while obj.parent is not None:
                     obj = obj.parent
                 return obj
-            
+
             top_parents = {get_top_parent(obj) for obj in imported_objects}
 
             print("IMPORTED OBJECTS", top_parents)
@@ -152,7 +149,9 @@ class BURNIN_IMPORTER(bpy.types.Operator):
                 if parent_name in ["character", "prop", "env"]:
                     prop_root = bpy.data.objects.get(parent_name)
                     if prop_root:
-                        print(f"🔹 Parenting '{top.name}' under existing prop '{prop_root.name}'")
+                        print(
+                            f"🔹 Parenting '{top.name}' under existing prop '{prop_root.name}'"
+                        )
 
                         # Re-parent all children of the imported top to the prop_root
                         for obj in top.children:
@@ -165,7 +164,6 @@ class BURNIN_IMPORTER(bpy.types.Operator):
                 else:
                     pass
 
-
         except Exception as e:
             print(e)
             self.report({"ERROR"}, e)
@@ -173,7 +171,6 @@ class BURNIN_IMPORTER(bpy.types.Operator):
 
         return {"FINISHED"}
 
-    
     def invoke(self, context, event):
         return self.execute(context)
 
@@ -181,10 +178,10 @@ class BURNIN_IMPORTER(bpy.types.Operator):
 class BurninImporterPanel(bpy.types.Panel):
     bl_label = "Burnin Importer"
     bl_idname = "VIEW3D_PT_burnin_importer_panel"
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'UI'
-    bl_category = "Burnin"  
-    bl_options = {'DEFAULT_CLOSED'}
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_category = "Burnin"
+    bl_options = {"DEFAULT_CLOSED"}
 
     def draw(self, context):
         layout = self.layout
