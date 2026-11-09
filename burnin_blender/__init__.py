@@ -17,6 +17,8 @@ from .show import show_panel
 from .show.asset import asset_publish, asset_build
 from .show.shot import shot_build, shot_publish
 
+# BURNIN RENDEr
+from .render import render_panel
 
 # Collect all classes to register
 classes = (
@@ -35,7 +37,11 @@ classes = (
     asset_build.BU_ASSET_BUILD,
 
     shot_publish.BU_SHOT_PUBLISH,
-    shot_build.BU_SHOT_BUILD
+    shot_build.BU_SHOT_BUILD,
+
+    # render
+    render_panel.BurninRenderPanel,
+    render_panel.BU_OT_Render
 )
 
 
@@ -44,10 +50,11 @@ def enable(addon_name="burnin-blender"):
     """Registers all Blender classes"""
     for cls in classes:
         bpy.utils.register_class(cls)
-    
+
     exporter_properties.register_properties()
     register_import_properties()
     show_panel.register_properties()
+    render_panel.register_properties()
     print(f"✅ {addon_name} enabled")
 
 
@@ -55,9 +62,10 @@ def disable(addon_name="burnin-blender"):
     """Unregisters all Blender classes"""
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
-    
+
     # Unregister scene properties
     exporter_properties.unregister_properties()
     unregister_import_properties()
     show_panel.unregister_properties()
+    render_panel.unregister_properties()
     print(f"✅ {addon_name} disabled")
